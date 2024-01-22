@@ -242,7 +242,10 @@ static void *g2l_shift_internal(g2l_t *self)
     }
     struct my_node *tmp = self->tail;
     self->tail = tmp->previous;
-    self->tail->next = NULL;
+    if (self->tail != NULL)
+    {
+        self->tail->next = NULL;
+    }
     self->n -= 1;
     void *data = tmp->data;
     free(tmp);
