@@ -60,6 +60,16 @@ example_quick_example: \
 		-o $(EXAMPLES_BUILD_DIR)/quick_example
 	./$(EXAMPLES_BUILD_DIR)/quick_example
 
+example_unit_testing: \
+	$(EXAMPLES_BUILD_DIR) \
+	$(INCLUDE_DIR)/$(LIB_NAME).h \
+	$(SOURCE_DIR)/$(LIB_NAME).c \
+	$(EXAMPLES_DIR)/unit_testing.c
+	$(CC) $(CFLAGS) \
+		$(SOURCE_DIR)/$(LIB_NAME).c $(EXAMPLES_DIR)/unit_testing.c \
+		-o $(EXAMPLES_BUILD_DIR)/unit_testing
+	./$(EXAMPLES_BUILD_DIR)/unit_testing
+
 # =======================================
 #                LIBRARY
 # =======================================
