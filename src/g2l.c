@@ -28,6 +28,13 @@
 
 #include "g2l.h"
 
+#ifndef G2L_SRC_FILE_NAME
+#define G2L_SRC_FILE_NAME "g2l.c"
+#endif
+
+#define LIBRARY_ERROR_PREFIX "[library error]"         // An actual error in the library implementation
+#define PROGRAMMING_ERROR_PREFIX "[programming error]" // An programming error (i.e, made by the application using the library)
+
 static void *g2l_pop_internal(g2l_t *self);
 static void *g2l_shift_internal(g2l_t *self);
 
@@ -59,7 +66,7 @@ g2l_t *g2l_create(size_t data_size, bool abort_on_enomem)
         }
         if (errno != ENOMEM) // Based on my understanding, this should not be possible.
         {
-            fprintf(stderr, "Expecting errno to contain '%s' but contains '%s'\n", strerror(ENOMEM), strerror(errno));
+            fprintf(stderr, "%s Oups... Expecting errno to contain '%s' but contains '%s'\n", LIBRARY_ERROR_PREFIX, strerror(ENOMEM), strerror(errno));
             abort();
         }
         return NULL;
@@ -84,7 +91,7 @@ void g2l_clear(g2l_t *self)
     }
     if (self->n != 0)
     {
-        fprintf(stderr, "Oups... Something is wrong. This should not be possible.\n");
+        fprintf(stderr, "%s Oups... Something is wrong. This should not be possible.\n", LIBRARY_ERROR_PREFIX);
         abort();
     }
     self->head = NULL;
@@ -104,6 +111,16 @@ size_t g2l_size(g2l_t const *self)
 
 int g2l_push(g2l_t *self, void const *data)
 {
+    if (self->data_size == 0 && data != NULL)
+    {
+        fprintf(stderr, "[file:%s][line:%i] %s %s 'data' argument should be NULL when 'data_size = 0'\n", G2L_SRC_FILE_NAME, __LINE__, __func__, PROGRAMMING_ERROR_PREFIX);
+        abort();
+    }
+    if (self->data_size > 0 && data == NULL)
+    {
+        fprintf(stderr, "[file:%s][line:%i] %s %s 'data' argument should not be NULL because 'data_size = %zu'\n", G2L_SRC_FILE_NAME, __LINE__, __func__, PROGRAMMING_ERROR_PREFIX, self->data_size);
+        abort();
+    }
     struct my_node *node = malloc(sizeof(struct my_node));
     if (node == NULL)
     {
@@ -114,7 +131,7 @@ int g2l_push(g2l_t *self, void const *data)
         }
         if (errno != ENOMEM) // Based on my understanding, this should not be possible.
         {
-            fprintf(stderr, "Expecting errno to contain '%s' but contains '%s'\n", strerror(ENOMEM), strerror(errno));
+            fprintf(stderr, "%s Oups... Expecting errno to contain '%s' but contains '%s'\n", LIBRARY_ERROR_PREFIX, strerror(ENOMEM), strerror(errno));
             abort();
         }
         return errno;
@@ -134,7 +151,7 @@ int g2l_push(g2l_t *self, void const *data)
             }
             if (errno != ENOMEM) // Based on my understanding, this should not be possible.
             {
-                fprintf(stderr, "Expecting errno to contain '%s' but contains '%s'\n", strerror(ENOMEM), strerror(errno));
+                fprintf(stderr, "%s Oups... Expecting errno to contain '%s' but contains '%s'\n", LIBRARY_ERROR_PREFIX, strerror(ENOMEM), strerror(errno));
                 abort();
             }
             free(node);
@@ -160,6 +177,11 @@ int g2l_push(g2l_t *self, void const *data)
 
 bool g2l_pop(g2l_t *self, void *data)
 {
+    if (self->data_size == 0 && data != NULL)
+    {
+        fprintf(stderr, "[file:%s][line:%i] %s %s expecting 'data' argument to be NULL pointer for 'data_size = 0'\n", G2L_SRC_FILE_NAME, __LINE__, __func__, PROGRAMMING_ERROR_PREFIX);
+        abort();
+    }
     if (self->n == 0)
     {
         return false;
@@ -167,11 +189,6 @@ bool g2l_pop(g2l_t *self, void *data)
     void *tmp = g2l_pop_internal(self);
     if (data != NULL)
     {
-        if (self->data_size == 0)
-        {
-            fprintf(stderr, "g2l_pop: expecting 'data' argument to be NULL pointer for 'data_size = 0'\n");
-            abort();
-        }
         memcpy(data, tmp, self->data_size);
     }
     if (tmp != NULL)
@@ -183,6 +200,11 @@ bool g2l_pop(g2l_t *self, void *data)
 
 bool g2l_shift(g2l_t *self, void *data)
 {
+    if (self->data_size == 0 && data != NULL)
+    {
+        fprintf(stderr, "[file:%s][line:%i] %s %s expecting 'data' argument to be NULL pointer for 'data_size = 0'\n", G2L_SRC_FILE_NAME, __LINE__, __func__, PROGRAMMING_ERROR_PREFIX);
+        abort();
+    }
     if (self->n == 0)
     {
         return false;
@@ -190,11 +212,6 @@ bool g2l_shift(g2l_t *self, void *data)
     void *tmp = g2l_shift_internal(self);
     if (data != NULL)
     {
-        if (self->data_size == 0)
-        {
-            fprintf(stderr, "g2l_shift: expecting 'data' argument to be NULL pointer for 'data_size = 0'\n");
-            abort();
-        }
         memcpy(data, tmp, self->data_size);
     }
     if (tmp != NULL)
@@ -218,7 +235,7 @@ static void *g2l_pop_internal(g2l_t *self)
 {
     if (self->n == 0)
     {
-        fprintf(stderr, "g2l_pop_internal() should not be called for 'self->n = 0'\n");
+        fprintf(stderr, "%s g2l_pop_internal() should not be called for 'self->n = 0'\n", LIBRARY_ERROR_PREFIX);
         abort();
     }
     struct my_node *tmp = self->head;
@@ -241,7 +258,7 @@ static void *g2l_shift_internal(g2l_t *self)
 {
     if (self->n == 0)
     {
-        fprintf(stderr, "g2l_shift_internal() should not be called for 'self->n = 0'\n");
+        fprintf(stderr, "%s g2l_shift_internal() should not be called for 'self->n = 0'\n", LIBRARY_ERROR_PREFIX);
         abort();
     }
     struct my_node *tmp = self->tail;

@@ -36,10 +36,27 @@
 
 #include "g2l.h"
 
+#define LOG_RUNNING_FUNCTION() fprintf(stdout, "Running '%s'\n", __func__)
+
+enum PROGRAMMING_ERROR_TEST_TO_RUN
+{
+    PROGRAMMING_ERROR_TEST_TO_RUN_NONE,
+    PROGRAMMING_ERROR_TEST_TO_RUN_NULL_POP,
+    PROGRAMMING_ERROR_TEST_TO_RUN_NULL_SHIFT,
+    PROGRAMMING_ERROR_TEST_TO_RUN_NULL_PUSH,
+    PROGRAMMING_ERROR_TEST_TO_RUN_NON_NULL_PUSH,
+};
+
 static void test_custom_data_type_with_pop_and_shift(void);
 static void test_push_shift_order(void);
 static void test_push_pop_order(void);
 static void test_null_data_type_and_basic_stuff(void);
+
+static void test_programming_error_none(void);
+static void test_programming_error_null_pop(void);
+static void test_programming_error_null_push(void);
+static void test_programming_error_null_shift(void);
+static void test_programming_error_non_null_push(void);
 
 int main(void)
 {
@@ -47,11 +64,33 @@ int main(void)
     test_push_shift_order();
     test_push_pop_order();
     test_null_data_type_and_basic_stuff();
+
+    enum PROGRAMMING_ERROR_TEST_TO_RUN to_run = PROGRAMMING_ERROR_TEST_TO_RUN_NONE;
+    switch (to_run)
+    {
+    case PROGRAMMING_ERROR_TEST_TO_RUN_NULL_POP:
+        test_programming_error_null_pop();
+        break;
+    case PROGRAMMING_ERROR_TEST_TO_RUN_NULL_SHIFT:
+        test_programming_error_null_shift();
+        break;
+    case PROGRAMMING_ERROR_TEST_TO_RUN_NULL_PUSH:
+        test_programming_error_null_push();
+        break;
+    case PROGRAMMING_ERROR_TEST_TO_RUN_NON_NULL_PUSH:
+        test_programming_error_non_null_push();
+        break;
+    default:
+        test_programming_error_none();
+    }
+
     return 0;
 }
 
 static void test_custom_data_type_with_pop_and_shift(void)
 {
+    LOG_RUNNING_FUNCTION();
+
     struct my_custom_data_type
     {
         char character;
@@ -99,6 +138,7 @@ static void test_custom_data_type_with_pop_and_shift(void)
 
 static void test_push_shift_order(void)
 {
+    LOG_RUNNING_FUNCTION();
     g2l_t *list = g2l_create(sizeof(int), true);
     int tmp;
     const int n = 10;
@@ -118,6 +158,7 @@ static void test_push_shift_order(void)
 
 static void test_push_pop_order(void)
 {
+    LOG_RUNNING_FUNCTION();
     g2l_t *list = g2l_create(sizeof(int), true);
     int tmp;
     const int n = 10;
@@ -137,6 +178,7 @@ static void test_push_pop_order(void)
 
 static void test_null_data_type_and_basic_stuff(void)
 {
+    LOG_RUNNING_FUNCTION();
     g2l_t *list = g2l_create(0, true);
     assert(g2l_size(list) == 0);
     g2l_push(list, NULL);
@@ -153,5 +195,45 @@ static void test_null_data_type_and_basic_stuff(void)
     assert(g2l_size(list) == 5);
     g2l_clear(list);
     assert(g2l_size(list) == 0);
+    g2l_destroy(list);
+}
+
+static void test_programming_error_none(void)
+{
+    LOG_RUNNING_FUNCTION();
+}
+
+static void test_programming_error_null_pop(void)
+{
+    LOG_RUNNING_FUNCTION();
+    g2l_t *list = g2l_create(0, true);
+    int tmp;
+    g2l_pop(list, &tmp);
+    g2l_destroy(list);
+}
+
+static void test_programming_error_null_shift(void)
+{
+    LOG_RUNNING_FUNCTION();
+    g2l_t *list = g2l_create(0, true);
+    int tmp;
+    g2l_shift(list, &tmp);
+    g2l_destroy(list);
+}
+
+static void test_programming_error_null_push(void)
+{
+    LOG_RUNNING_FUNCTION();
+    g2l_t *list = g2l_create(sizeof(int), true);
+    g2l_push(list, NULL);
+    g2l_destroy(list);
+}
+
+static void test_programming_error_non_null_push(void)
+{
+    LOG_RUNNING_FUNCTION();
+    g2l_t *list = g2l_create(0, true);
+    char tmp = 'a';
+    g2l_push(list, &tmp);
     g2l_destroy(list);
 }
