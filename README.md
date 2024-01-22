@@ -8,13 +8,13 @@ This C library project is an attempt at a [doubly linked list](https://en.wikipe
 
 ### Etymology
 
-All of the types and functions exposed by this library's public API are namespaced using the `g2l_` prefix, where `g2l` stands for `generic doubly linked list`. More precisely, `g` stands for `generic`, while `2` stands for "double", which is a base word for "doubly", but `2` is also used to convey "L times 2", because (L)inked (L)ist has 2 L's, thus the `l` (i.e., lowercase of L).
+All of the types and functions exposed by this library's public API are namespaced using the `g2l_` prefix, where `g2l` stands for `generic doubly linked list`. More precisely, `g` stands for `generic`, while `2` stands for "double", which is a base word for "doubly", but `2` is also used to convey "L times 2", because (L)inked (L)ist has 2 L's, thus the `l` letter (i.e., lowercase of L).
 
 ## Design goal and fun facts
 
 In computer science, [linked lists](https://en.wikipedia.org/wiki/Linked_list) have several applications, [queues](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)) and [stacks](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) being two popular ones, and which latter two are in fact almost often used as illustrations in linked list tutorials.
 
-When I started writing this project, I was planning on simply using the singly linked list, which corresponds to the most basic linked list type. But when writing the code for the classic [queue](./examples/basic_queue.c) and [stack](./examples/basic_stack.c) examples, I realized that, while implementing a stack with a singly linked list results in `O(1)` (read more about [Big O notation](https://en.wikipedia.org/wiki/Big_O_notation)) for both `push` and `pop` operations, the queue implementation based on the singly linked list could only achieve `O(1)` and `O(n)` for the analogous operations (i.e., either `enqueue` or `dequeue` can be `O(1)`, but the other will need to be `O(n)`). That fact led me to implementing a doubly linked list instead,  which allows for `O(1)` for both operations in both the `push/pop` and `enqueue/dequeue` pairs.
+When I started writing this project, I was planning on simply using the singly linked list, which corresponds to the most basic linked list type. But when writing the code for the classic [queue](./examples/basic_queue.c) and [stack](./examples/basic_stack.c) examples, I realized that, while implementing a stack with a singly linked list results in `O(1)` (read more about [Big O notation](https://en.wikipedia.org/wiki/Big_O_notation)) for both `push` and `pop` operations, the queue implementation based on the singly linked list could only achieve `O(1)` and `O(n)` for the analogous operations (i.e., either `enqueue` or `dequeue` can be `O(1)`, but the other will need to be `O(n)`). That fact led me to decide to implement a doubly linked list instead, which allows for `O(1)` for both operations in both the `push/pop` and `enqueue/dequeue` pairs.
 
 ## A quick example
 
@@ -106,11 +106,11 @@ static void demo_custom_data_type(void)
 
 ## How it works
 
-The library's public API is actually pretty simple. The `g2l_create` function is used to instantiate and return a pointer to a dynamically allocated object of type `g2l_t`, which serves as a container for the doubly linked list with generic data type. The factory function's first argument is named `data_size` and corresponds to the size (in bytes) of the data type that will be tracked by the list. For instance, if we want to use the list to store values of type `int`, then we proceed by instantiating the list as follows: `g2l_t *list = g2l_create(sizeof(int), true);`. The second argument, which is named `abort_on_enomem`, is of type `bool` and indicates whether the library should take care of aborting the process upon `ENOMEM` errors (which could technically occur when internally calling `malloc`) for the specific instance. If the application wants to handle such errors itself, then the `g2l_create` function should be called with `abort_on_enomem = false`.
+The library's public API is actually pretty simple. The `g2l_create` function is used to instantiate and return a pointer to a dynamically allocated object of type `g2l_t`, which serves as a container for the doubly linked list with generic data type. The `g2l_create` function's first argument is named `data_size` and corresponds to the size (in bytes) of the data type that will be tracked by the list. For instance, if we want to use the list to store values of type `int`, then we proceed by instantiating the list as follows: `g2l_t *list = g2l_create(sizeof(int), true);`. The second argument, which is named `abort_on_enomem`, is of type `bool` and indicates whether the library should take care of aborting the process upon `ENOMEM` errors (which could technically occur when internally calling `malloc`) for the specific instance. If the application wants to handle such errors itself, then the `g2l_create` function should be called with `abort_on_enomem = false`.
 
-Once instantiated, the list object can be used to push (using `g2l_push`) elements into it and pop (using `g2l_pop`) elements out of it. The API also have a function to shift (`g2l_shift`) an element out of it, which means that it will remove the list's oldest element. While "pushing" and "popping" is a terminology mostly employed when using a list as a "stack", "enqueuing" and "dequeuing" correspond to more appropriate terms when working with a "queue". For that reason, `g2l_push` has an alias named `g2l_enqueue`, and `g2l_shift` has an alias named `g2l_dequeue`. The [quick example section](#a-quick-example) section above clearly illustrates the use of those functions, as well as how the list can be used for storing arbitrary data types.
+Once instantiated, the list object can be used to push (using `g2l_push`) elements into it and pop (using `g2l_pop`) elements out of it. The API also have a function to shift (`g2l_shift`) an element out of it, which means that it will remove the list's oldest element. While "pushing" and "popping" is a terminology mostly employed when using a list as a "stack", "enqueuing" and "dequeuing" correspond to more appropriate terms when working with a "queue". For that reason, `g2l_push` has an alias named `g2l_enqueue`, and `g2l_shift` has an alias named `g2l_dequeue`. The [quick example section](#a-quick-example) above clearly illustrates the use of those functions, as well as how the list can be used for storing arbitrary data types.
 
-At this point, it will have become clear to the reader that this library only allows pushing and popping or shifting elements. In other words, there are no functions for traversing the list without consuming its elements. The current API is therefore, I have to admit, somewhat restrictive, but more on that in the [roadmap section](#roadmap) below.
+At this point, it will have become clear to the reader that this library only allows pushing and popping or shifting elements. In other words, there are no functions for traversing the list without consuming its elements. The current API is therefore, I have to admit, somewhat limited, but more on that in the [roadmap section](#roadmap) below.
 
 ## Files and directories explained
 
@@ -128,8 +128,8 @@ This is an experimental library, so please use with caution, and please feel fre
 
 ## Roadmap
 
-* I want to find and add more examples illustrating use cases for which this library could be useful.
-* As alluded to in this document's [how it works](#how-it-works) section, the current API is somewhat limited, only allowing to push and pop or shift elements from the linked list. In a next version, I plan on adding more functions that will allow traversing a list without consuming it.
+* I want to find and add more examples illustrating use cases for which this library could be useful in practice.
+* As alluded to in this document's [how it works](#how-it-works) section, the current API is somewhat limited, only allowing to push and pop or shift elements from the linked list. In a next version, I plan on adding more functions that will allow doing a little bit more (e.g., traversing a list without consuming it).
 
 ## Contact
 
