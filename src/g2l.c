@@ -223,6 +223,10 @@ static void *g2l_pop_internal(g2l_t *self)
     }
     struct my_node *tmp = self->head;
     self->head = tmp->next;
+    if (self->head != NULL)
+    {
+        self->head->previous = NULL;
+    }
     self->n -= 1;
     void *data = tmp->data;
     free(tmp);
