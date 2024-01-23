@@ -12,7 +12,7 @@ All of the types and functions exposed by this library's public API are namespac
 
 ## Design goal and fun facts
 
-In computer science, [linked lists](https://en.wikipedia.org/wiki/Linked_list) have several applications, [queues](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)) and [stacks](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) being two popular ones, and which latter two are in fact almost often used as illustrations in linked list tutorials.
+In computer science, [linked lists](https://en.wikipedia.org/wiki/Linked_list) have several applications, [queues](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)) and [stacks](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) being two popular ones, and which latter two are in fact almost always used as illustrations in linked list tutorials.
 
 When I started writing this project, I was planning on simply using the singly linked list, which corresponds to the most basic linked list type. But when writing the code for the classic [queue](./examples/basic_queue.c) and [stack](./examples/basic_stack.c) examples, I realized that, while implementing a stack with a singly linked list results in `O(1)` (read more about [Big O notation](https://en.wikipedia.org/wiki/Big_O_notation)) for both `push` and `pop` operations, the queue implementation based on the singly linked list could only achieve `O(1)` and `O(n)` for the analogous operations (i.e., either `enqueue` or `dequeue` can be `O(1)`, but the other will need to be `O(n)`). That fact led me to decide to implement a doubly linked list instead, which allows for `O(1)` for both operations in both the `push/pop` and `enqueue/dequeue` pairs.
 
